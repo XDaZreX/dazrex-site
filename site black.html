@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>DaZreX</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --card-bg: rgba(8, 10, 19, 0.78);
+      --card-border: rgba(255, 255, 255, 0.06);
+      --text-main: #f5f5f5;
+      --text-muted: #a9b0c2;
+      --spotify: #1db954;
+      --font-main: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
+      --font-mono: "JetBrains Mono", "Fira Code", Menlo, Monaco, Consolas, monospace;
+
+      --spotify-card-bg: rgba(4, 5, 10, 0.6);
+      --spotify-card-text: #f5f5f5;
+      --spotify-card-muted: #9ca3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-main);
+      font-family: var(--font-main);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      position: relative;
+      background: #05070b url("bg.jpg") center/cover fixed no-repeat;
+      filter: grayscale(1);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 10% 0, rgba(15,23,42,0.8), transparent 55%),
+        radial-gradient(circle at 90% 100%, rgba(15,23,42,0.9), transparent 55%),
+        rgba(15,23,42,0.65);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .snow-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .snowflake {
+      position: absolute;
+      top: -10px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.9);
+      opacity: 0.8;
+      filter: blur(0.3px);
+      animation-name: snow-fall;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+    }
+
+    @keyframes snow-fall {
+      0%   { transform: translate3d(0, -10vh, 0); }
+      100% { transform: translate3d(0, 110vh, 0); }
+    }
+
+    .window {
+      position: relative;
+      z-index: 2;
+      width: min(920px, 100% - 40px);
+      border-radius: 26px;
+      padding: 30px 32px 28px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      box-shadow:
+        0 32px 80px rgba(0, 0, 0, 0.85),
+        0 0 0 1px rgba(255, 255, 255, 0.02);
+      backdrop-filter: blur(26px);
+      -webkit-backdrop-filter: blur(26px);
+      overflow: hidden;
+    }
+
+    .window-inner { position: relative; z-index: 1; }
+
+    .window-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .window-dots { display: flex; gap: 6px; }
+
+    .dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 999px;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4);
+    }
+
+    .dot.red { background: #ff5f57; }
+    .dot.yellow { background: #febc2e; }
+    .dot.green { background: #28c840; }
+
+    .window-title {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #7b8193;
+    }
+
+    .hero {
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 22px;
+      box-shadow: 0 26px 60px rgba(0,0,0,0.9);
+    }
+
+    .hero img { display: block; width: 100%; height: auto; }
+
+    h1 {
+      text-align: center;
+      font-size: 36px;
+      letter-spacing: 0.32em;
+      text-indent: 0.32em;
+      margin-bottom: 14px;
+    }
+
+    .lead {
+      text-align: center;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-muted);
+      max-width: 620px;
+      margin: 0 auto 28px;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-top: 18px;
+      margin-bottom: 6px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .section-text {
+      text-align: center;
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--text-muted);
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .meta-block { margin-top: 22px; }
+
+    .meta-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      text-align: center;
+      color: #9ca3b8;
+      margin-bottom: 6px;
+    }
+
+    .meta-value {
+      text-align: center;
+      font-size: 14px;
+      color: var(--text-main);
+    }
+
+    .meta-value.muted { color: #9ca3b8; }
+
+    .social-block { margin-top: 22px; text-align: center; }
+
+    .social-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .social-tag {
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      text-decoration: none;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      backdrop-filter: blur(14px);
+      box-shadow:
+        0 0 24px rgba(148,163,184,0.35),
+        0 12px 30px rgba(0,0,0,0.95);
+      transition: all 0.2s ease-out;
+      display: inline-block;
+    }
+
+    .social-tag:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 0 32px rgba(203,213,225,0.55),
+        0 18px 44px rgba(0,0,0,0.98);
+      background: rgba(15, 23, 42, 1);
+    }
+
+    .social-discord  { border-color: rgba(88,101,242,0.55); }
+    .social-telegram { border-color: rgba(56,189,248,0.55); }
+    .social-vk       { border-color: rgba(59,130,246,0.55); }
+    .social-spotify  { border-color: rgba(34,197,94,0.65); }
+
+    .social-pc {
+      border-color: rgba(148,163,184,0.7);
+      box-shadow:
+        0 0 28px rgba(148,163,184,0.6),
+        0 16px 40px rgba(0,0,0,0.98);
+    }
+
+    .pc-section { margin-top: 18px; text-align: center; }
+
+    .pc-toggle { cursor: pointer; }
+
+    .game-card {
+      margin-top: 26px;
+      background: rgba(4, 6, 15, 0.9);
+      border-radius: 18px;
+      border: 1px solid rgba(148,163,184,0.25);
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 20px 45px rgba(0,0,0,0.85);
+      backdrop-filter: blur(16px);
+    }
+
+    .game-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      background: radial-gradient(circle at 30% 0, #4f46e5, #020617);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 20px;
+      color: #e5e7eb;
+      flex-shrink: 0;
+      box-shadow: 0 14px 30px rgba(15,23,42,0.9);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .game-icon img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: inherit;
+      display: none;
+    }
+
+    .game-icon span { position: relative; z-index: 1; }
+
+    .game-info { flex: 1; min-width: 0; }
+
+    .game-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #9ca3b8;
+      margin-bottom: 3px;
+    }
+
+    .game-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 2px;
+    }
+
+    .game-meta {
+      font-size: 12px;
+      color: #9ca3b8;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .spotify-card {
+      margin-top: 32px;
+      background: var(--spotify-card-bg);
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      color: var(--spotify-card-text);
+    }
+
+    .spotify-cover {
+      width: 70px;
+      height: 70px;
+      border-radius: 16px;
+      background: rgba(17, 17, 17, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 22px;
+      color: #f9fafb;
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.9);
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .spotify-cover img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 16px;
+      display: none;
+    }
+
+    .spotify-info { flex: 1; min-width: 0; }
+
+    .spotify-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--spotify-card-muted);
+      margin-bottom: 4px;
+    }
+
+    .spotify-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--spotify-card-text);
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .spotify-meta {
+      font-size: 12px;
+      color: var(--spotify-card-muted);
+    }
+
+    .spotify-button {
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: var(--spotify);
+      color: #020617;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      font-family: var(--font-main);
+      box-shadow: 0 12px 30px rgba(24, 185, 84, 0.5);
+      white-space: nowrap;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+    }
+
+    .spotify-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 40px rgba(24, 185, 84, 0.6);
+      background: #22c55e;
+    }
+
+    .spotify-button:active {
+      transform: translateY(0);
+      box-shadow: 0 10px 25px rgba(24, 185, 84, 0.45);
+    }
+
+    @media (max-width: 640px) {
+      .spotify-card {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .spotify-cover {
+        width: 100%;
+        height: auto;
+        border-radius: 18px;
+      }
+
+      .spotify-cover::before {
+        content: "";
+        padding-top: 100%;
+        display: block;
+      }
+
+      .spotify-cover img { position: absolute; }
+
+      .spotify-info { margin-top: 12px; }
+
+      .spotify-button {
+        margin-top: 16px;
+        width: 100%;
+        text-align: center;
+        display: inline-block;
+      }
+
+      .window {
+        padding: 22px 18px 24px;
+        border-radius: 20px;
+      }
+
+      h1 {
+        font-size: 28px;
+        letter-spacing: 0.26em;
+      }
+    }
+
+    .pc-card {
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transform: translateY(8px);
+      transition: max-height 0.35s ease, opacity 0.25s ease, transform 0.25s ease;
+      background: rgba(4, 6, 15, 0.92);
+      border-radius: 18px;
+      border: 1px solid rgba(148,163,184,0.25);
+      padding: 0 22px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.9);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      text-align: left;
+      margin-top: 14px;
+    }
+
+    .pc-card.open {
+      max-height: 500px;
+      opacity: 1;
+      transform: translateY(0);
+      padding-top: 18px;
+      padding-bottom: 18px;
+    }
+
+    .pc-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #e5e7eb;
+    }
+
+    .pc-spec-list {
+      list-style: none;
+      font-size: 14px;
+      margin: 0;
+      padding: 0;
+    }
+
+    .pc-spec-list li + li { margin-top: 6px; }
+
+    .pc-link {
+      color: #a5b4fc;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .pc-link:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="snow-layer" id="snow-layer"></div>
+
+  <main class="window">
+    <div class="window-inner">
+      <header class="window-header">
+        <div class="window-dots">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+        </div>
+        <div class="window-title">DaZreX</div>
+      </header>
+
+      <div class="hero">
+        <img src="top.gif" alt="">
+      </div>
+
+      <h1>DAZREX</h1>
+
+      <p class="lead">
+        I’m DaZreX — creator of Telegram and Discord automation,
+        developer of system-modification tools and experimental security software.
+      </p>
+
+      <section>
+        <h2 class="section-title">About me</h2>
+        <p class="section-text">
+          I create automation for platforms, tools for modifying software behavior,
+          and systems focused on cybersecurity experimentation and analysis.
+        </p>
+        <p class="section-text" style="margin-top: 10px">
+          I reverse-engineer logic, unlock restricted functionality and build
+          utilities that expand how programs were originally designed to work.
+        </p>
+      </section>
+
+      <section class="meta-block">
+        <div class="meta-label">Location</div>
+        <div class="meta-value">Kyiv, Ukraine</div>
+      </section>
+
+      <section class="meta-block">
+        <div class="meta-label">Languages</div>
+        <div class="meta-value">English, Russian, Ukrainian</div>
+      </section>
+
+      <section class="meta-block">
+        <div class="meta-label">Date of birth</div>
+        <div class="meta-value">23 January</div>
+      </section>
+
+      <section class="meta-block">
+        <div class="meta-label">Socials</div>
+
+        <div class="social-block">
+          <div class="social-buttons">
+            <a class="social-tag social-discord"
+               href="https://discord.com/users/702406205079027712"
+               target="_blank" rel="noopener">
+              Discord
+            </a>
+
+            <a class="social-tag social-telegram"
+               href="https://t.me/Okrovavleny"
+               target="_blank" rel="noopener">
+              Telegram
+            </a>
+
+            <a class="social-tag social-vk"
+               href="https://vk.com/xdazrex"
+               target="_blank" rel="noopener">
+              VK
+            </a>
+
+            <a class="social-tag social-spotify"
+               href="https://open.spotify.com/user/31vnfogrtba53f5f2eokeggfodny"
+               target="_blank" rel="noopener">
+              Spotify
+            </a>
+          </div>
+        </div>
+
+        <div class="pc-section">
+          <button class="social-tag social-pc pc-toggle" id="pc-toggle">My PC</button>
+
+          <div class="pc-card" id="pc-card">
+            <div class="pc-title">My PC build</div>
+            <ul class="pc-spec-list">
+              <li>
+                CPU:
+                <a class="pc-link"
+                   href="https://www.amd.com/en/products/processors/desktops/ryzen/5000-series/amd-ryzen-5-5600x.html"
+                   target="_blank" rel="noopener">
+                  AMD Ryzen 5 5600X
+                </a>
+              </li>
+              <li>
+                Motherboard:
+                <a class="pc-link"
+                   href="https://www.asrock.com/mb/AMD/B450%20Pro4%20R2.0/index.asp"
+                   target="_blank" rel="noopener">
+                  ASRock B450 Pro4 R2.0
+                </a>
+              </li>
+              <li>
+                GPU:
+                <a class="pc-link"
+                   href="https://rog.asus.com/graphics-cards/graphics-cards/rog-strix/rog-strix-rtx3070-o8g-gaming-model/"
+                   target="_blank" rel="noopener">
+                  ASUS ROG Strix GeForce RTX 3070 (12&nbsp;GB)
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="game-card" id="game-card">
+        <div class="game-icon">
+          <img id="game-icon-img" alt="">
+          <span id="game-icon-fallback">🎮</span>
+        </div>
+        <div class="game-info">
+          <div class="game-label" id="game-label">Now playing</div>
+          <div class="game-title" id="game-title">Nothing playing right now</div>
+          <div class="game-meta" id="game-meta">Your current Discord game will appear here.</div>
+        </div>
+      </section>
+
+      <section class="spotify-card" id="spotify-card">
+        <div class="spotify-cover">
+          <img id="spotify-cover-img" alt="">
+          <span id="spotify-cover-fallback">DZ</span>
+        </div>
+        <div class="spotify-info">
+          <div class="spotify-label" id="spotify-label">DaZreX on Spotify</div>
+          <div class="spotify-title" id="spotify-title">Nothing playing right now</div>
+          <div class="spotify-meta" id="spotify-meta">Last played track will appear here.</div>
+        </div>
+        <a class="spotify-button" id="spotify-button"
+           href="https://open.spotify.com/user/31vnfogrtba53f5f2eokeggfodny"
+           target="_blank" rel="noopener">
+          Open Spotify
+        </a>
+      </section>
+
+    </div>
+  </main>
+
+  <script>
+  (function createSnow() {
+    const layer = document.getElementById("snow-layer");
+    const flakes = 80;
+    for (let i = 0; i < flakes; i++) {
+      const f = document.createElement("div");
+      f.className = "snowflake";
+      const size = 2 + Math.random() * 3;
+      const left = Math.random() * 100;
+      const duration = 10 + Math.random() * 20;
+      const delay = Math.random() * -duration;
+      f.style.width = size + "px";
+      f.style.height = size + "px";
+      f.style.left = left + "vw";
+      f.style.animationDuration = duration + "s";
+      f.style.animationDelay = delay + "s";
+      layer.appendChild(f);
+    }
+  })();
+
+  const SPOTIFY_API_URL = "https://dazrexspotify.blocksrikerslavaa.workers.dev/";
+  const coverImg = document.getElementById("spotify-cover-img");
+  const coverFallback = document.getElementById("spotify-cover-fallback");
+  const titleEl = document.getElementById("spotify-title");
+  const metaEl = document.getElementById("spotify-meta");
+  const buttonEl = document.getElementById("spotify-button");
+  const labelEl = document.getElementById("spotify-label");
+  const SPOTIFY_PROFILE_URL = "https://open.spotify.com/user/31vnfogrtba53f5f2eokeggfodny";
+
+  function applySpotifyThemeFromImage(img) {
+    try {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      const w = canvas.width = 32;
+      const h = canvas.height = 32;
+      ctx.drawImage(img, 0, 0, w, h);
+      const data = ctx.getImageData(0, 0, w, h).data;
+      let r = 0, g = 0, b = 0, count = 0;
+      for (let i = 0; i < data.length; i += 4) {
+        const rr = data[i], gg = data[i+1], bb = data[i+2], aa = data[i+3];
+        if (aa < 200) continue;
+        r += rr; g += gg; b += bb; count++;
+      }
+      if (!count) return;
+      r = Math.round(r / count);
+      g = Math.round(g / count);
+      b = Math.round(b / count);
+      const brightness = 0.299*r + 0.587*g + 0.114*b;
+      if (brightness > 215) {
+        document.documentElement.style.setProperty("--spotify-card-bg", "#f9fafb");
+        document.documentElement.style.setProperty("--spotify-card-text", "#020617");
+        document.documentElement.style.setProperty("--spotify-card-muted", "#6b7280");
+      } else {
+        document.documentElement.style.setProperty("--spotify-card-bg", "rgba(4,5,10,0.82)");
+        document.documentElement.style.setProperty("--spotify-card-text", "#f9fafb");
+        document.documentElement.style.setProperty("--spotify-card-muted", "#9ca3b8");
+      }
+    } catch (e) {
+      console.warn("Spotify theme from image failed:", e);
+    }
+  }
+
+  async function updateSpotify() {
+    try {
+      const resp = await fetch(SPOTIFY_API_URL + "?t=" + Date.now(), { cache: "no-store" });
+      if (!resp.ok) throw new Error("HTTP " + resp.status);
+      const ct = resp.headers.get("content-type") || "";
+      if (!ct.includes("application/json")) throw new Error("Invalid content-type: " + ct);
+      const data = await resp.json();
+      console.log("Spotify data", data);
+
+      if (!data || !data.playing || !data.track) {
+        labelEl.textContent = "DaZreX on Spotify";
+        titleEl.textContent = "Nothing playing right now";
+        metaEl.textContent = "Last played track will appear here.";
+        buttonEl.href = SPOTIFY_PROFILE_URL;
+        coverImg.style.display = "none";
+        coverFallback.style.display = "block";
+        document.documentElement.style.setProperty("--spotify-card-bg", "rgba(4,5,10,0.6)");
+        document.documentElement.style.setProperty("--spotify-card-text", "#f5f5f5");
+        document.documentElement.style.setProperty("--spotify-card-muted", "#9ca3b8");
+        return;
+      }
+
+      labelEl.textContent = "Now playing";
+      titleEl.textContent = data.track || "Unknown track";
+      metaEl.textContent = data.artist || "Unknown artist";
+      buttonEl.href = data.url || SPOTIFY_PROFILE_URL;
+
+      if (data.albumImage) {
+        coverImg.crossOrigin = "anonymous";
+        coverImg.src = data.albumImage;
+        coverImg.onload = () => {
+          coverImg.style.display = "block";
+          coverFallback.style.display = "none";
+          applySpotifyThemeFromImage(coverImg);
+        };
+      } else {
+        coverImg.style.display = "none";
+        coverFallback.style.display = "block";
+        document.documentElement.style.setProperty("--spotify-card-bg", "rgba(4,5,10,0.6)");
+        document.documentElement.style.setProperty("--spotify-card-text", "#f5f5f5");
+        document.documentElement.style.setProperty("--spotify-card-muted", "#9ca3b8");
+      }
+    } catch (e) {
+      console.error("Spotify widget error:", e);
+      labelEl.textContent = "DaZreX on Spotify";
+      titleEl.textContent = "Error loading track";
+      metaEl.textContent = "Spotify API error: " + e.message;
+      coverImg.style.display = "none";
+      coverFallback.style.display = "block";
+      buttonEl.href = SPOTIFY_PROFILE_URL;
+      document.documentElement.style.setProperty("--spotify-card-bg", "rgba(4,5,10,0.6)");
+      document.documentElement.style.setProperty("--spotify-card-text", "#f5f5f5");
+      document.documentElement.style.setProperty("--spotify-card-muted", "#9ca3b8");
+    }
+  }
+
+  updateSpotify();
+  setInterval(updateSpotify, 15000);
+
+  const DISCORD_USER_ID = "702406205079027712";
+  const LANYARD_API_URL = "https://api.lanyard.rest/v1/users/" + DISCORD_USER_ID;
+
+  const gameLabelEl = document.getElementById("game-label");
+  const gameTitleEl = document.getElementById("game-title");
+  const gameMetaEl  = document.getElementById("game-meta");
+  const gameIconImg = document.getElementById("game-icon-img");
+  const gameIconFallback = document.getElementById("game-icon-fallback");
+
+  function setGameFallbackInitials(name) {
+    if (!name) { gameIconFallback.textContent = "🎮"; return; }
+    const parts = name.split(" ").filter(Boolean).slice(0, 2);
+    const initials = parts.map(w => w[0].toUpperCase()).join("");
+    gameIconFallback.textContent = initials || "🎮";
+  }
+
+  async function updateGame() {
+    try {
+      const resp = await fetch(LANYARD_API_URL + "?_=" + Date.now(), { cache: "no-store" });
+      if (!resp.ok) throw new Error("HTTP " + resp.status);
+      const payload = await resp.json();
+      console.log("Lanyard data", payload);
+
+      if (!payload.success || !payload.data) {
+        gameLabelEl.textContent = "Now playing";
+        gameTitleEl.textContent = "Not connected to Lanyard";
+        gameMetaEl.textContent  = "Join discord.gg/lanyard so the API can see your status.";
+        gameIconImg.style.display = "none";
+        gameIconFallback.textContent = "🎮";
+        return;
+      }
+
+      const data = payload.data;
+      const activities = Array.isArray(data.activities) ? data.activities : [];
+      const status = data.discord_status || "offline";
+
+      let game = activities.find(a => a.type === 0);
+      if (!game && activities.length > 0) game = activities[0];
+
+      if (!game) {
+        gameLabelEl.textContent = "Now playing";
+        gameTitleEl.textContent = "Nothing playing right now";
+        gameMetaEl.textContent  = "Status: " + status;
+        gameIconImg.style.display = "none";
+        gameIconFallback.textContent = "🎮";
+        return;
+      }
+
+      gameLabelEl.textContent = "Now playing";
+      gameTitleEl.textContent = game.name || "Unknown activity";
+
+      const details = game.details || "";
+      const state   = game.state   || "";
+      const parts   = [details, state].filter(Boolean);
+      gameMetaEl.textContent = parts.length ? parts.join(" • ") : ("Status: " + status);
+
+      let iconUrl = null;
+      if (game.assets && game.assets.large_image) {
+        const key = game.assets.large_image;
+        if (key.startsWith("mp:")) {
+          iconUrl = "https://media.discordapp.net/" + key.substring(3);
+        } else if (game.application_id) {
+          iconUrl = "https://cdn.discordapp.com/app-assets/" + game.application_id + "/" + key + ".png";
+        }
+      }
+
+      if (iconUrl) {
+        gameIconImg.src = iconUrl;
+        gameIconImg.style.display = "block";
+        gameIconFallback.style.display = "none";
+      } else {
+        gameIconImg.style.display = "none";
+        gameIconFallback.style.display = "block";
+        setGameFallbackInitials(game.name);
+      }
+    } catch (e) {
+      console.error("Game widget error:", e);
+      gameLabelEl.textContent = "Now playing";
+      gameTitleEl.textContent = "Error loading activity";
+      gameMetaEl.textContent  = "Discord API / Lanyard error.";
+      gameIconImg.style.display = "none";
+      gameIconFallback.style.display = "block";
+      gameIconFallback.textContent = "🎮";
+    }
+  }
+
+  updateGame();
+  setInterval(updateGame, 15000);
+
+  const pcToggle = document.getElementById("pc-toggle");
+  const pcCard   = document.getElementById("pc-card");
+  pcToggle.addEventListener("click", () => {
+    const isOpen = pcCard.classList.toggle("open");
+    pcToggle.textContent = isOpen ? "Hide My PC" : "My PC";
+  });
+  </script>
+</body>
+</html>
